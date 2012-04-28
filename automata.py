@@ -104,6 +104,8 @@ class DeterministicFiniteAutomata(object):
 
         #--- rotina simplificada para mostrar o conteudo das estruturas do DFA
 
+        print '+------------------------------------------------+'
+
         for e in self.__dict__.keys(): #--- retorna todas as estruturas declaradas dentro do objeto
             
             if e in ['dfa_definition' , 'root']: #--- esses dois rotulos não são estruturas lineares
@@ -111,6 +113,8 @@ class DeterministicFiniteAutomata(object):
                 continue
 
             print e + ' -> ' , self.__dict__.get(e)[0::1]
+
+        print '+------------------------------------------------+'
 
         #self.build_dfa(self.root).get_name()
     
@@ -259,6 +263,26 @@ class DeterministicFiniteAutomata(object):
 #
 #-------------------------------------------------------------------------------
 
+class Text(object):
+
+    def __init__(self, text):
+
+        self.text = text
+
+        self.index = 0
+
+    def get_next_char(self):
+
+        tmp = self.text[self.index]
+
+        self.index += 1
+
+        return tmp
+
+    def get_index(self):
+
+        return self.index
+
 class Source(object):
     
     def __init__(self, file_path):
@@ -267,7 +291,7 @@ class Source(object):
         
         #--- replacing all the special characters
 
-        self.text = self.original_text.replace(' ','[SPC]').replace('\n','[EOL]').replace(',','[CMA]').replace('(','[OBKT]').replace(')','[CBKT]')
+        self.text = self.original_text.replace(' ','[SPC]').replace('\n','[EOL]').replace(',','[CMA]').replace('(','[OBKT]').replace(')','[CBKT]').replace('.','[DOT')
         
         self.index = 0
 
@@ -321,6 +345,42 @@ class Source(object):
         
         return self.index
 
+class TokenSource(object):
+
+    def __init__(self, file_path):
+
+        self.original_text = ( ''.join( open(file_path) ) ).split('\n')
+
+        self.text = []
+
+        self.index = 0
+
+        for elements in self.original_text:
+
+            elements = elements.split(':')
+            
+            if elements[0] == '':
+
+                continue
+
+            self.text.append(elements[0])
+
+    def get_text(self):
+
+        return self.text
+
+    def get_next_char(self):
+
+        if( self.index >= len(self.text)):
+
+            return None
+
+        c = self.text[self.index]
+
+        self.index += 1
+
+        return c
+
 
 #-------------------------------------------------------------------------------
 
@@ -330,462 +390,67 @@ class Manager(object):
 
         self.dfa_list = {}
 
-        self.source = None
-
-    def set_source(self, source):
-
-        self.source = source
-
-    def get_source(self):
-
-        return self.source
-
     def add_dfa(self, dfa):
 
+        
         self.dfa_list[dfa.get_name()] = dfa
+        
 
     def get_dfa(self, name):
 
+         
         return self.dfa_list.get(name)
+         
 
-    def validate(self, dfa):
+    #def validate(self, dfa, source):
+    def validate(self, dfa, source):
+
+        return self.vld(dfa.get_initial_state(), source)
         
-        print 'run bitch, run!'
-
-        self.vld(dfa.get_initial_state(), self.get_source())
-
     def vld(self, state, source):
 
         char = source.get_next_char()
-    
+        
         #--- ainda temos caracteres para ler
-
+        
         if( char != None ) :
-            
-            print '<reading><'+char+'>\t<index><'+str(source.get_index())+'>\t<len><'+str(len(source.text))+'>',
+            print '\n+-------------------------------+'
+            print '<reading><'+char+'>\n<index><'+str(source.index)+'> <len><'+str(len(source.text))+'>',
             
             next_state = state.get_next_state( char )
-
+            
             #--- ainda existe estados como respota do consumo?
-
+            
             if ( next_state != None ): #--- sim!
-
-                print 'from <'+state.get_name()+'> to <'+next_state.get_name()+'>'
-
-                self.vld(next_state, source)
-
+            
+                print '\nfrom <'+state.get_name()+'> to <'+next_state.get_name()+'>'
+                print '+-------------------------------+\n'
+                return self.vld(next_state, source)
+            
             else : #--- nao
-
-                print '\n<no transiction found>\n<invalid word>'
-
+            
+                print '\n<<<no transiction found>>>>\n<<<invalid word>>>>'
+                
                 return False
-
+            
         #--- nao ha mais caracteres
-
+            
         else :
-
+            
             #--- fim do texto
-
+            
             #--- avaliando o estado no qual o texto terminou
-
+            
             if state.is_final :
-
+            
                 print '<valid word>'
                 
                 return True
-
+            
             else :
-
+            
                 print '<invalid word>'
-
+                
                 return False
-
-#-------------------------------------------------------------------------------
-class OldManager(object):
-
-    def __init__(self):
-
-        self.transition_table = [] # the abstraction of production rule table
-
-        self.states           = [] # avaible states on the DFA
-
-        self.final_state      = [] # acceptables states
-
-        self.initial_state    = "" # start point
-
-        self.alphabet         = [] # ...
-
-        self.root_state       = None # root for the automata tree
-
-    def search_transition(self, state_name): # yeah, i'm think why i'm not transporting a Object state .-.
-
-            '''
-                Search method on the reachable states on "state_name".
-            '''
-
-            print '---------------------------------------\n'\
-                  '    BGN  search for a transition       \n'\
-                  '---------------------------------------\n'
-
-            print '\n[search transition for] -> '+state_name
-
-            for transitions in self.transition_table:
-
-                print '\n\t[reading] -> '+transitions
-
-                splited_transition = transitions.split("->")
-
-                # here we read every element on the transition_table
-                # the format of this elements are: [label_actual_state] -> [label_symbol] : [label_next_state]
-                #
-                # like a : Foo -> lu : Boo
-                #
-                # so we need to know with the [label_actul_state] is the same for the name passed on args
-                # if it is we got the correct ruler of production for this state!
-                #
-
-                if splited_transition[0] == state_name:
-
-                    print '\n\t\t[found a rule]'
-
-                    consume_symbol = splited_transition[1].split(":")[0]
-
-                    production_state_name = splited_transition[1].split(":")[1]
-
-                    print '\n\t\t\tif i\'m on ['+state_name+'] and read ['+consume_symbol+'] i\'m going to ['+production_state_name+']'
-
-                    print '\n---------------------------------------\n'\
-                          '    END  search for a transition       \n'\
-                          '---------------------------------------\n'
-
-                    return [consume_symbol,production_state_name]
-
-                else : # its a linear search dude! we need to test ALL the thing
-
-                    continue
-
-                return None
-
-    #def build_dfa(self,state): # here is a try to build the virtual DFA on a "elegant" recursively method
-
-            if state == None:
-
-                # so we think... there are a self.root on attribute yeah?
-                #
-                # yeah.
-                #
-                # that self.root needs to be the "head" that points for the real "first state" on DFA
-                # and this is why we use ini_state buff?
-                # i am affraid not.i
-                #
-                # see the load_af_file method
-                # he calls this and keep the returnin on the root node! so the mothafocka self.root is the zero state
-
-                print '\n----------------------------\n'\
-                      '      [build AF first run]'\
-                      '\n----------------------------\n\n'\
-                      '\tCreating Initial state with name ['+self.initial_state+']'
-
-                ini_state = State(self.initial_state)
-
-                print '\n[calling recursion]'
-
-                self.build_dfa(ini_state)
-
-                return ini_state
-
-            else:
-
-                # here is the recursive part actived by the direct calling on first run
-
-                actual_state = state.get_state_name()
-
-                print '\n[state] -> ['+actual_state+']'
-
-                print '\n\t[load transition_table and  search for a production rule]'
-
-                tmp = self.search_transition(actual_state)
-
-                # before 05/03/2012 we returning void from the method search_transition when he not found production
-                # now the dude return None object .-.
-                # so we need a treatment for this null point (java fellings >.<)
-
-                if tmp == None:
-
-                    exit()
-
-                print '\n[creating transition] -> ['+actual_state+'] -> ['+tmp[0]+'] : ['+tmp[1]+']'
-
-                print '\n\t[adding rule] '+'\"['+actual_state+'] -> ['+tmp[0]+'] = ['+tmp[1]+']\"'+'to state ['+actual_state+']'
-
-                n_state = State(tmp[1])
-
-                #print n_state.get_state_name()
-
-                state.add_transition(tmp[0], n_state)
-
-                if tmp[1] in self.final_state:
-
-                    print '\n\t\t\t[final state ['+n_state.get_state_name()+']] AF needs to die here .-.\n'
-
-                    return None
-
-                else:
-
-                    self.build_dfa(n_state)
-
-    def formatting_file(self, filepath):
-
-        t = ''
-
-        for lines in filepath:
-
-            t += lines
-
-        t = t.replace(" ", "").replace("\n", "")
-
-        return t
-
-    def formatted_test(self, filepath):
-
-        result_set = {}
-
-        result_string_list = []
-
-        final_result = []
-
-        t = self.formatting_file(filepath)
-
-        print '[searching for test tag]'
-
-        for sentence in t.split(";"):
-
-            tag = sentence.split("=")[0]
-
-            if tag != '':
-
-                value = sentence.split("=")[1]
-
-            else :
-
-                continue
-
-            print '[tag] -> '+tag
-
-            print '[value] -> '+value
-
-            if tag == 'test':
-
-                for v in value.split(','):
-
-                    string = v.split(':')[0]
-
-                    val = v.split(':')[1]
-
-                    if val == 't':
-
-                        val = True
-
-                    else:
-
-                        val = False
-
-                    result_set[string] = val
-
-                    result_string_list.append(string)
-
-                #FOR
-
-            #END
-
-        #FOR
-
-        print '\n\n[Begging Tes]\n\n'
-
-        for word in result_string_list:
-
-            x = self.validate(0, word, None)
-
-            print '~>'+str(x)
-
-            if x == True:
-
-
-                if result_set.get(word) == True:
-
-                    final_result.append((word, str(result_set.get(word)), str(x)))
-
-                else:
-
-                    final_result.append((word, str(result_set.get(word)), str(x)))
-
-            else:
-
-                if result_set.get(word) == True:
-
-                    final_result.append((word, str(result_set.get(word)), str(x)))
-
-                else:
-
-                    final_result.append((word, str(result_set.get(word)), str(x)))
-
-        #FOR
-
-        print Ascii.print_table(['string','to be', 'got'], final_result)
-
-
-    def load_dfa_definition_file(self, filepath):
-
-        print '\n\n\nBGN [loading table]\n\n\n'
-
-#        t = ''
-#
-#        for lines in filepath:
-#
-#            t += lines
-#
-#        t = t.replace(" ", "").replace("\n", "")
-
-        t = self.formatting_file(filepath)
-
-        print '[formatted text without spaces]\n'
-
-        for sentence in t.split(";"):
-
-            print '\n----[sentence analisis]'
-
-            print '\n\t[reading sentence] -> '+sentence
-
-            tmp = sentence.split("=")
-
-            print '\n\t[splitting sentence] -> ' + str(tmp)
-
-            if len(tmp) == 1:
-
-                print '[non valid sentence] break process'
-
-                break
-
-            else:
-
-                print '\n----[tag analisis]'
-                print '\n\t[reading]'
-                print '\n\t\t[tag] -> '+tmp[0]
-                print '\n\t\t[values] -> '+tmp[1]
-
-                for value in tmp[1].split(','):
-
-                    #swicth = {'states':self.states.append(value),'final_state':self.final_state.append(value),'alphabet': self.alphabet.append(value), 'transition_list' : self.transition_table.append(value)}
-
-                    #swicth.get(tmp[0])
-
-                    print '\n----[storing]'
-
-                    print '\n\t[value] -> '+value+' [on] '+tmp[0]
-
-                    if tmp[0] == 'states':
-
-                        self.states.append(value)
-
-                    elif tmp[0] == 'final_state':
-
-                        self.final_state.append(value)
-
-                    elif tmp[0] == 'initial_state':
-
-                        self.initial_state = value
-
-                    elif tmp[0] == 'alphabet':
-
-                        self.alphabet.append(value)
-
-                    elif tmp[0] == 'transition_list':
-
-                        self.transition_table.append(value)
-
-                    else:
-
-                        continue
-
-                print '\n\n--------[New Loop]\n\n'
-        #END FOR
-
-        print '\n----[structs]'
-
-        print '[alphabet]\t\t'+str(self.alphabet)+'\n'\
-              '[states]\t\t'+str(self.states)+'\n'\
-              '[final_state]\t\t'+str(self.final_state)+'\n'\
-              '[transitiontable]\t'+str(self.transition_table)+'\n'
-
-        print '\n\n\nEND [loading table]\n\n\n'
-
-        self.root_state = self.build_dfa(None)
-
-    #--- END load_file DEF -------------------------------------------------
-
-    def validate(self,read_index,word,state):
-
-        print '\n[index] '+str(read_index+1)+'/'+str(len(word))+' [word size]'
-
-        if state == None and read_index == 0:
-
-            print '\n---------------------------------------'\
-                  '\n             BGN  Validating           '\
-                  '\n---------------------------------------\n'
-
-            next_state = self.root_state.get_next_state(word[read_index])
-
-            print '\n\t['+self.root_state.get_state_name()+'] -> ['+word[read_index]+'] : ['+next_state.get_state_name()+']'
-
-            print  '\n\n\t\t[looking for next state]'
-
-        else:
-
-            if read_index == len(word):
-
-                return
-
-            print '--------------------------------------'
-            print '\nstate ['+state.get_state_name()+']'\
-                  '\n\t['+state.get_state_name()+'] -> ['+word[read_index]+'] : [?]'\
-                  '\n\n\t\t[looking for next state]'
-
-            next_state = state.get_next_state( word[read_index] )
-
-            print '\n\t\t\t['+next_state.get_state_name()+']'
-
-        if next_state == None :#or ( next_state != None and (read_index + 1) == len(self.transition_table) ):
-
-            print '\n\t\t\t[404][transition not found] word cannot be validated on AF'
-
-            return False
-
-        elif next_state.get_state_name() in self.final_state:
-
-                print '\n\t\t\t\t[valid word!] next state is a final state'
-
-                return True
-
-# - Deprecated - first model for valid finalstate!
-#        if read_index == len(word) - 1:
-#
-#            if next_state.get_state_name() in self.final_state:
-#
-#                print 'Next state is ['+next_state.get_state_name()+'] and is satisfatory state ;D'
-#
-#                return True
-#
-#            else:
-#
-#                print 'Invalid Word!\nNo transition was found for consume ['+word[read_index]+']'
-#
-#                return False
-
-        read_index+=1
-
-        print '\n\t\t\t\t Found!'
-
-        print '--------------------------------------'
-
-        return self.validate(read_index,word,next_state)
-
+        #TODO verificar validade de  um retorno aqui
+        #return True

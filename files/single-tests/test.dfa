@@ -1,0 +1,17 @@
+states=0,1,2,3,4,5;
+
+initial_state=0;
+
+final_state=5;
+
+alphabet=a,b;
+
+transition_list=
+ 0 -> a : 1,
+ 0 -> b : 1,
+ 1 -> a : 2, 
+ 2 -> b : 3,
+ 3 -> a : 4, 
+ 4 -> b : 5
+;
+

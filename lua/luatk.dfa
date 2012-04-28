@@ -1,0 +1,17 @@
+states=0,1,2,3,4;
+
+initial_state = 0;
+
+final_state = 4;
+
+alphabet= id, allocation_operator, integer,comma,eol;
+
+transition_list=
+ 0 -> id : 1,
+ 1 -> allocation_operator : 2,
+ 2 -> integer : 3,
+ 3 -> comma : 2,
+ 3 -> eol : 4,
+ 4 -> eol : 4 
+;
+
