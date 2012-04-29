@@ -9,11 +9,11 @@ t = time()
 
 #----------------------------------------------------------
 
-directory_qtt = sys.argv[1].count('/')
+fullpath = sys.argv[1]
 
-print directory_qtt
+directory_qtt = fullpath.count('/')
 
-path = ''
+path_without_filename = ''
 
 fullfilename = ''
 
@@ -27,7 +27,7 @@ for c in sys.argv[1]:
 
     else :
 
-        path += c
+        path_without_filename += c
 
     if c == '/':
 
@@ -37,24 +37,64 @@ extension = fullfilename.split('.')[1]
 
 filename = fullfilename.split('.')[0]
 
-print path
+print '+--------------------------------+'
+
+print fullpath
+
+print path_without_filename
+
+print fullfilename
+
 print filename
+
 print extension
 
-print 'generating token'
 
-tokenized_source = lexy.Scanner().tokenizer(path+fullfilename)
+print '+--------------------------------+'
+print '|    --- generating token ---    |'
+print '+--------------------------------+'
 
-f = open( path+filename+'.token' , 'w' )
+print 'tokenizing -> '+fullpath
 
-f.write(tokenized_source)
+tokenlist = lexy.Scanner().tokenizer(fullpath)
+#tokenlist = tokenlist[0: (len(tokenlist) - 1) ]
 
-print 'parsing'
+#--- misc
+print '+---------- Text ----------+'
+for line in tokenlist.split('\n'):
+	
+	print '| ~ '+line
+print '+--------------------------+'
 
-dfa          = automata.DeterministicFiniteAutomata( 'files/parsers/'+extension+'.dfa' ).build()
-token_source = automata.TokenSource( path+filename+'.token' )
+print 'token list saved as -> ' + (path_without_filename+filename+'.token')
 
-answer = automata.Manager().validate( dfa, token_source )
+f = open( (path_without_filename+filename+'.token') , 'w' )
+f.write(tokenlist)
+f.close()
+
+print '+--------------------------------+'
+print '|         --- parsing ---        |'
+print '+--------------------------------+'
+
+#--- loading dfa
+
+parser_path = 'files/parsers/'
+print 'loading dfa for language -> ' + extension + '[' + parser_path + extension + '.dfa]'
+parser_fullpath = parser_path + extension + '.dfa'
+
+dfa = automata.DeterministicFiniteAutomata( parser_fullpath ).build()
+
+#--- loading the token list
+
+print 'loading token list -> ' + path_without_filename + filename + '.token'
+tokenlist_path = path_without_filename + filename + '.token'
+
+s = open(tokenlist_path)
+
+token_source = automata.TokenSource( tokenlist_path )
+
+m  = automata.Manager()
+answer = m.validate( dfa, token_source )
 
 print '<',answer,'>'
 

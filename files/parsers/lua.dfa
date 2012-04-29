@@ -1,17 +1,39 @@
-states=0,1,2,3,4;
+states=0,1,2,3,4,5,666;
 
 initial_state=0;
 
-final_state=0,4;
+final_state = 0,666;
 
-alphabet= identifier, allocation_operator, integer,comma,eol;
+alphabet      = identifier, integer, float, string , allocation_operator, comma, open_key, close_key, open_bracket, close_bracket, eol,eof;
 
-transition_list=
+transition_list =
+
+ 0 -> eol : 0,
+ 0 -> eof : 666,
+ 
  0 -> identifier : 1,
+ 
  1 -> allocation_operator : 2,
+ 
  2 -> integer : 3,
- 3 -> comma : 2,
- 3 -> eol : 0,
- 0 -> eol : 0 
+ 2 -> float   : 3,
+ 2 -> string  : 3,
+ 
+ 2 -> open_key : 4,
+ 
+ 4 -> integer    : 5,
+ 4 -> float      : 5,
+ 4 -> string     : 5,
+ 4 -> identifier : 5,
+ 
+ 5 -> comma     : 4,
+ 5 -> close_key : 3,
+ 
+ 3 -> comma : 0,
+ 3 -> eol   : 0,
+ 3 -> eof   : 666
+ 
+ 
+ 
 ;
 

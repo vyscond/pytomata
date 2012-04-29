@@ -242,8 +242,8 @@ class Scanner(object):
         
         for c in string:
             
-            # print 'buffer <'+buffer+'>'
-            # print 'c = '+c
+            print 'buffer <'+buffer+'>'
+            print 'c = '+c
 
             #--- whitespace delimiter
 
@@ -259,11 +259,11 @@ class Scanner(object):
                 
                         #print 'send to avaliation'
                         #buffer += '\n'
-                        string_tokenized += self.what_is_this(buffer)+':'+buffer+'\n'
+                        string_tokenized += '\n'+self.what_is_this(buffer)+':'+buffer
 
                         if c == '\n':
 
-                            string_tokenized += 'eol\n'
+                            string_tokenized += '\neol'
 
                         buffer = ''
                 
@@ -280,22 +280,42 @@ class Scanner(object):
             #     string_tokenized += 'eol:'+'eol'+'\n'
 
             #--- others nonterminals
-            elif self.nonterminals(c) and (not self.nonterminals(buffer)) and buffer != '':
+            #elif self.nonterminals(c) and (not self.nonterminals(buffer)) and buffer != '':
                 
-                string_tokenized += self.what_is_this(buffer)+':'+buffer+'\n'
+                #string_tokenized += '\n'+self.what_is_this(buffer)+':'+buffer
 
-                buffer = c
+                #buffer = c
 
-            elif self.nonterminals(c) and self.nonterminals(buffer):
+            #elif self.nonterminals(c) and self.nonterminals(buffer):
 
-                buffer += c
+                #buffer += c
 
-            elif (not self.nonterminals(c)) and self.nonterminals(buffer):
+            #elif (not self.nonterminals(c)) and self.nonterminals(buffer):
                 
-                string_tokenized += self.what_is_this(buffer)+':'+buffer+'\n'
+                #string_tokenized += '\n'+self.what_is_this(buffer)+':'+buffer
 
-                buffer = c
-
+                #buffer = c
+            
+            elif c in [',','(',')','{','}','[',']'] :
+                print '>>'
+                
+                if not (squote and dquote) :
+                    
+                    if buffer != '' :
+                        
+                        string_tokenized += '\n'+self.what_is_this(buffer)+':'+buffer
+                        
+                        buffer = ''
+                        
+                    string_tokenized += '\n'+self.what_is_this(c)+':'+c
+                    
+                    continue
+                    
+                else :
+                        
+                    buffer += c
+                    
+    
             elif c == '\\': #---scape sequence
          
                 scape = True
@@ -306,7 +326,7 @@ class Scanner(object):
             
             #--- Single Quote found
             elif c == '\'':
-                
+                print 'xD'
                 #--- scape was actived?
                 if scape == True:
                     
@@ -316,7 +336,7 @@ class Scanner(object):
                     
                 else :
                     
-                    #buffer += c #--- put the open/close single quote in the buffer
+                    buffer += c #--- put the open/close single quote in the buffer
 
                     squote = not squote
         
@@ -339,6 +359,6 @@ class Scanner(object):
         
                 buffer += c
         
-        return string_tokenized
+        return string_tokenized+'\neof'
 
 

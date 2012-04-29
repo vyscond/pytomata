@@ -12,6 +12,8 @@ from time import time
 dfa_file = sys.argv[1]
 token_file = sys.argv[2]
 
+print token_file
+
 lua_automata     = dfa.DeterministicFiniteAutomata(dfa_file).build()
 lua_token_source = dfa.TokenSource(token_file)
 

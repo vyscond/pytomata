@@ -128,8 +128,8 @@ class DeterministicFiniteAutomata(object):
         
         for l in text.replace('\n','').split(';'):
             
-            line_tag = l.split('=')[0]
-            
+            line_tag = l.split('=')[0].replace(' ','')
+
             if line_tag == tag:
                 
                 return l.split('=')[1]
@@ -157,47 +157,13 @@ class DeterministicFiniteAutomata(object):
         self.root = self.build_dfa()
 
         return self
-  
-    #--- deprecated algorithm - (no self-consume)
-    #def build_dfa (self, state): 
-    #    
-    #    #--- filling the respective production rules
-    #    print 'search production rules for state[' + state.get_name() + ']'
-    #    
-    #    for line in self.production_rules:
-    #        
-    #        #print 'rule -> ', line
-    #
-    #        line = line.split('->')
-    #        
-    #        if state.get_name() == line[0] :
-    #            
-    #            print line[1]
-    #            
-    #            consume_symbol = line[1].split(':')[0]
-    #            
-    #            production_state = line[1].split(':')[1]
-    #            
-    #            new_state = State( production_state )
-    #
-    #            if new_state.get_name() in self.final_state_list:
-    #                
-    #                new_state.set_final(True)
-    #
-    #            state.add_production_rule ( consume_symbol , new_state )
-    #
-    #            print state.get_name() + ' >> ' + new_state.get_name()
-    #
-    #            print '<< ' + self.build_dfa(new_state).get_name()
-    # 
-    #    return state
 
     def build_dfa (self):
 
         print '<building state>'
         
         #--- criando todos os possiveis estados antes nos podemos retirar alguns [if] proxima iteração
-        #--- e também acaba com o problema se null pointer! uma vez que se deixarmos a criação dos estados
+        #--- e tamb�mm acaba com o problema se null pointer! uma vez que se deixarmos a criação dos estados
         #--- na iteração normal (1 por 1) quando tiver um estado n referenciando um n+1, aplicariamos a recursão para criarmos ele
         #--- e se o estado n+1 usa-se o estado n entrariamos num loop inifinito
         
@@ -350,13 +316,13 @@ class TokenSource(object):
     def __init__(self, file_path):
 
         self.original_text = ( ''.join( open(file_path) ) ).split('\n')
-
+        
         self.text = []
 
         self.index = 0
 
         for elements in self.original_text:
-
+            
             elements = elements.split(':')
             
             if elements[0] == '':
@@ -408,7 +374,7 @@ class Manager(object):
         return self.vld(dfa.get_initial_state(), source)
         
     def vld(self, state, source):
-
+        
         char = source.get_next_char()
         
         #--- ainda temos caracteres para ler

@@ -13,6 +13,6 @@ print '%.2f' %(tf-t)
 
 print tk
 
-f = open((sys.argv[1].split('.')[0])+'.tokens','w')
+f = open((sys.argv[1].split('.')[0])+'.token','w')
 
 f.write(tk)
