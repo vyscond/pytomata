@@ -55,8 +55,9 @@ print '|    --- generating token ---    |'
 print '+--------------------------------+'
 
 print 'tokenizing -> '+fullpath
-
-tokenlist = lexy.Scanner().tokenizer(fullpath)
+l = lexy.Scanner()
+l.load_lexer_definition_from_file('files/lexers/'+extension+'.lex')
+tokenlist = l.tokenizer(fullpath)
 #tokenlist = tokenlist[0: (len(tokenlist) - 1) ]
 
 #--- misc

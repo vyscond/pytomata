@@ -1,26 +1,12 @@
-#!/usr/bin/env python2
-'''
-Created on Feb 20, 2012
+# create a Lumpy object and capture reference state
+import Lumpy
+lumpy = Lumpy.Lumpy()
+lumpy.make_reference()
 
-@author: abara
-'''
+# run the test code
+x = [1, 2, 3]
+y = x
+z = list(x)
 
-import automata as dfa
-
-dfa_test = dfa.DeterministicFiniteAutomata('files/lua-tests/lua_func.dfa').build()
-
-print '\n+---------------------------+\n'
-
-m = dfa.Manager()
-
-m.add_dfa(dfa_test)
-
-m.set_source ( dfa.Source('files/lua-tests/hello.lua') )
-
-r = m.validate( m.get_dfa( dfa_test.get_name() ) )
-
-print 'Result >> ', 
-
-print r
-
-
+# draw the current state (relative to the last ref)
+lumpy.object_diagram()

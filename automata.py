@@ -5,24 +5,40 @@ Created on Feb 20, 2012
 
 @author: abara
 '''
-import util.ascii_art as Ascii
+#import util.ascii_art as Ascii
 
 class State(object):
 
-    def set_initial(self, bool):
+    def set_initial(self, initial):
         
-        self.initial = bool
+        '''
+            Set this state as initial {yes : True, no : False}
+        '''
+        
+        self.initial = initial
     
-    def is_initial(self, bool):
+    def is_initial(self):
+        
+        '''
+            check if the state is initial
+        '''
         
         return self.initial
     
-    def set_final(self, bool):
+    def set_final(self, final):
         
-        self.final = bool
+        '''
+            Set this state as final {yes : True, no : False}
+        '''
+        
+        self.final = final
         
     def is_final(self):
-    
+        
+        '''
+            check if the state is final
+        '''
+        
         return self.final
 
     def __init__(self, state_name):
@@ -37,21 +53,62 @@ class State(object):
         
     def get_name(self):
         
+        '''
+            get the State's name
+        '''
+        
         return self.state_name
         
     def add_production_rule(self, consume_symbol, state):
+        
+        '''
+            Add a new production
+        '''
         
         self.transition_states[consume_symbol] = state
         
     def get_next_state(self, consume_symbol):
         
+        '''
+            Get the next state based on symbol that was readed
+        '''
+        
         return self.transition_states.get(consume_symbol)
 
 #-------------------------------------------------------------------------------
 
+def search_tag_line(tag , text ):
+        
+        for line in text.replace('\n','').split(';'):
+            
+            line_tag = line.split('=')[0].replace(' ','')
+
+            if line_tag == tag:
+                
+                return line.split('=')[1]
+   
+def fill(values, struct) :
+    
+    for element in values.split(','):
+        
+        
+        #--- caracteres especiais
+        
+        tmp = element.replace(" ","")
+        
+        #if tmp == 'SP':
+        
+        #   tmp = ' '
+        
+        struct.append(tmp)
+
 class DeterministicFiniteAutomata(object):
     
     def get_name(self):
+        
+        '''
+            get the name of this DFA
+        '''
         
         return self.name
     
@@ -86,33 +143,39 @@ class DeterministicFiniteAutomata(object):
         #
         #----------------------------------------------------------
 
-        #--- a funÃ§Ã£o [search_tag_line] server para retornar a lista de valores relacionadas a tag
-        #--- esse resposta entra parÃ¢metro na funÃ§Ã£o que "popula" as estruturas [fill]
-
-        self.fill( self.search_tag_line('states', self.dfa_definition)           , self.state_list       )
-        self.fill( self.search_tag_line('final_state', self.dfa_definition)      , self.final_state_list )
-        self.fill( self.search_tag_line('alphabet', self.dfa_definition)         , self.alphabet_list    )
-        self.fill( self.search_tag_line( 'transition_list', self.dfa_definition) , self.production_rules )
+        #--- a função [search_tag_line] server para retornar a lista de valores relacionadas a tag
+        #--- esse resposta entra como parâmetro na função [fill] que preenche as estruturas 
+        
+        
+        
+        fill( search_tag_line('states', self.dfa_definition) , self.state_list)
+        fill( search_tag_line('final_state', self.dfa_definition) , self.final_state_list)
+        fill( search_tag_line('alphabet', self.dfa_definition) , self.alphabet_list)
+        fill( search_tag_line('transition_list', self.dfa_definition) , self.production_rules)
  
-        #--- because theres only one initial state .-. --- #self.build  ( self.search_tag_line('initial_state', self.dfa_definition)    , self.initial_state    )
+        #--- because theres only one initial state .-. ---
+        #self.build  ( self.search_tag_line('initial_state', self.dfa_definition)    , self.initial_state    )
 
-        self.initial_state = self.search_tag_line ('initial_state', self.dfa_definition)
+        self.initial_state = search_tag_line ('initial_state', self.dfa_definition)
 
         self.root = State(self.initial_state)
         
-        #--------------------------------
-
-        #--- rotina simplificada para mostrar o conteudo das estruturas do DFA
-
+        
+        #---------------------------------------------------------------------
+        #  rotina simplificada para mostrar o conteudo das estruturas do DFA
+        #---------------------------------------------------------------------
+        
         print '+------------------------------------------------+'
-
-        for e in self.__dict__.keys(): #--- retorna todas as estruturas declaradas dentro do objeto
+        
+        #--- retorna todas as estruturas declaradas dentro do objeto
+        for attribute_name in self.__dict__.keys(): 
             
-            if e in ['dfa_definition' , 'root']: #--- esses dois rotulos nÃ£o sÃ£o estruturas lineares
+            #--- esses dois rotulos nãoo são estruturas lineares
+            if attribute_name in ['dfa_definition' , 'root']: 
 
                 continue
 
-            print e + ' -> ' , self.__dict__.get(e)[0::1]
+            print attribute_name + ' -> ' , self.__dict__.get(attribute_name)[0::1]
 
         print '+------------------------------------------------+'
 
@@ -124,29 +187,7 @@ class DeterministicFiniteAutomata(object):
     #
     #---------------------------------------------
 
-    def search_tag_line( self , tag , text ):
-        
-        for l in text.replace('\n','').split(';'):
-            
-            line_tag = l.split('=')[0].replace(' ','')
-
-            if line_tag == tag:
-                
-                return l.split('=')[1]
-   
-    def fill(self, values, struct):
-
-        for v in values.split(','):
-
-            #--- caracteres especiais
-
-            tmp = v.replace(" ","")
-
-            #if tmp == 'SP':
-
-            #   tmp = ' '
-
-            struct.append(tmp)
+    
 
     #-----------------------------------------------    
     
@@ -230,7 +271,11 @@ class DeterministicFiniteAutomata(object):
 #-------------------------------------------------------------------------------
 
 class Text(object):
-
+    
+    '''
+        Abstracting a simple text for the automata motor
+    '''
+    
     def __init__(self, text):
 
         self.text = text
@@ -266,45 +311,51 @@ class Source(object):
         return self.text
 
     def get_next_char(self):
-
+        
+        '''
+            Will mask the entire text, including the special tokens, as a literal char sequence text
+        '''
+        
         #--- fim de fita
         if ( self.index >= len(self.text) ) :  
 
             return None
 
-        c = self.text[self.index]
+        char = self.text[self.index]
 
         #--- bufferizando caracteres especiais
-        if c == '[':
+        if char == '[':
 
-            c = self.special_token_buffer(c)
+            char = self.special_token_buffer(char)
             
         self.increment_index()
 
-        return c
+        return char
     
-    def special_token_buffer(self, c):
-
+    def special_token_buffer(self, special_token):
+        
+        '''
+            Buffering the string that begins with '[' delimiter
+        '''
+        
         self.increment_index()
 
-        for nc in range( self.index , len(self.text) ):
+        for char in range( self.index , len(self.text) ):
             
-            c += self.text[nc]
-
-            if self.text[nc] == ']' :
-
-                return c
-
+            special_token += self.text[char]
+            
+            if self.text[char] == ']' :
+            
+                return special_token
+            
             self.increment_index()
-
             
-
     def increment_index(self):
         
         self.index += 1
-
+    
     def decrement_index(self):
-
+        
         self.index -= 1
         
     def get_index(self):
@@ -312,7 +363,11 @@ class Source(object):
         return self.index
 
 class TokenSource(object):
-
+    
+    '''
+        Formmating .lex file to being parser text
+    '''
+    
     def __init__(self, file_path):
 
         self.original_text = ( ''.join( open(file_path) ) ).split('\n')
@@ -341,11 +396,11 @@ class TokenSource(object):
 
             return None
 
-        c = self.text[self.index]
+        char = self.text[self.index]
 
         self.index += 1
 
-        return c
+        return char
 
 
 #-------------------------------------------------------------------------------
