@@ -1,0 +1,70 @@
+0 -> eol : 0,
+
+0 -> eol : 0,
+
+# package
+
+0 -> package    : 1,
+1 -> id         : 2,
+2 -> dot        : 1,
+2 -> dot_comma  : 3,
+3 -> eol        : 0,
+
+# imports
+
+0 -> import     : 4,
+4 -> id         : 5,
+5 -> dot        : 4,
+5 -> dot_comma  : 6,
+6 -> eol        : 0,
+
+# public class ClassName
+
+0 -> public     : 7,
+0 -> private    : 7,
+7 -> eol        : 8,
+8 -> eol        : 8,
+    
+    8 -> class      : 9,
+    9 -> eol        : 9,
+    
+        9 -> id         : 10,
+        10 -> eol       : 10,
+            
+            10 -> open_key  : 11,
+            11 -> eol       : 11,
+  
+                # class body
+
+                11 -> public    : 12,
+                11 -> private   : 12,
+        
+                12 -> eol       : 12,
+
+                    12 -> byte      : 13,
+                    12 -> short     : 13,
+                    12 -> long      : 13,
+                    12 -> int       : 13,
+                    12 -> float     : 13,
+                    12 -> double    : 13,
+                    12 -> char      : 13,
+                    12 -> boolean   : 13,
+        
+                    13 -> eol       : 13,
+        
+                        13 -> assigment_operator            : 14,
+                        13 -> compound_assignment_operators : 14,
+                        
+                            14 -> eol                    : 14,
+                            
+                            14 -> integer, float, string : 15,
+                            
+                            15 -> eol                    : 15,
+                            
+                            15 -> math_operator          : 
+            
+            
+
+
+
+
