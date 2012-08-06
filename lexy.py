@@ -150,6 +150,8 @@ class Scanner(object):
         #~ 
         #~ return True
 
+
+    # TODO consertar isso pois dessa forma os identificadores não suportam underlines, hifens e outro caracteres especiais validos !!!
     def is_identifier(self, text):
         
         if text[0].isalpha() :
@@ -161,11 +163,11 @@ class Scanner(object):
         return False
         
         #~ for c in text:
-#~ 
+        #~ 
             #~ if not (c in self.alpha):
-#~ 
+        #~ 
                 #~ return False
-#~ 
+        #~ 
         #~ return True
 
     def is_delimiter(self, text):
@@ -225,6 +227,7 @@ class Scanner(object):
         if text in self.reserved_words : 
             
             return 'reserved_word' 
+            #return text
 
         #--------------------------------------
         print 'operators'
@@ -333,10 +336,14 @@ class Scanner(object):
     #     888     "Y88888P"  888    Y88b 8888888888 888    Y888 8888888 d8888888888 8888888888 888   T88b 
 
     def tokenizer(self, file_path):
-
+        
         string = ( ''.join( open(file_path) ) )
         
         buffer = ''
+        
+        print '~~~~~~~~~~~~~~~~~~~~~~~'
+        print string
+        print '~~~~~~~~~~~~~~~~~~~~~~~'
         
         #--- flags
         
@@ -354,8 +361,8 @@ class Scanner(object):
         
         for c in string:
             
-            #print 'buffer <'+buffer+'>'
-            print 'c = '+c
+            print 'buffer <'+buffer+'>'
+            print 'readhead <'+c+'>'
 
             #--- whitespace delimiter
 
@@ -373,11 +380,11 @@ class Scanner(object):
                         #buffer += '\n'
                         print 'buffer <'+buffer+'>'
                         string_tokenized += '\n'+self.what_is_this(buffer)+':'+buffer
-
+                        
                         if c == '\n':
-
+                        
                             string_tokenized += '\neol'
-
+                        
                         buffer = ''
                 
                     else :
@@ -411,6 +418,7 @@ class Scanner(object):
             
             #elif c in [',','(',')','{','}','[',']'] :
             elif self.is_nonterminals(c):
+                
                 print '>>'
                 
                 if squote == False and dquote == False :
@@ -476,5 +484,3 @@ class Scanner(object):
                 buffer += c
         
         return string_tokenized+'\neof'
-
-

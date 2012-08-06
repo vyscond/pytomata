@@ -1,0 +1,3 @@
+data_type <- byte, short, long, int, float, double, char, boolean
+
+declaration_variable <- data_type . identifier . dot_comma | data_type . identifier . declaration_variable

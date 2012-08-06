@@ -1,14 +1,37 @@
 
-assigment_operators <- =;
 
-logical_operators <- and, or, not;
+assigment_operator <- =;
 
-relational_operators <- == , > , < , >= , <=;
+logical_operator <- and, or, not;
 
-compound_assignment_operators  <- +=, -=, *=, /=, %=, ++, --;
+relational_operator <- == , > , < , >= , <=;
 
-math_operators <-  + , - , /, *, % ;
+compound_assignment_operator  <- +=, -=, *=, /=, %=, ++, --;
 
-reserved_words <-  and , break , do , else , elseif , end , false , for , function , if , in , local , nil , not , or , repeat , return , then , true , until , while;
+math_operator <-  + , - , /, *, % ;
 
-delimiters <- comma , open_bracket , close_bracket , open_key , close_key, open_parenthesis, close_parenthesis , dot_comma;
+reserved_word <-  and , break , do , else , elseif , end , false , for , function , if , in , local , nil , not , or , repeat , return , then , true , until , while;
+
+delimiter <- comma , open_bracket , close_bracket , open_key , close_key, open_parenthesis, close_parenthesis , dot_comma, dot;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

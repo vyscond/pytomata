@@ -1,69 +1,136 @@
-0 -> eol : 0,
+
+states=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23;
+
+initial_state=0;
+
+final_state = 17;
+
+alphabet      = break , do , else , if , false , for , public , private , null , return , true , class , while , byte, short, int, float, double, switch, case, static, void , identifier, integer, float, string , assigment_operator, compound_assignment_operators, comma, dot , dot_comma , open_key, close_key, open_bracket, close_bracket, eol,eof;
+
+transition_list =
+
 
 0 -> eol : 0,
 
-# package
+    0 -> package    : 1,
+        1 -> id         : 2,
+            2 -> dot        : 1,
+                2 -> dot_comma  : 3,
+    3 -> eol        : 3,
 
-0 -> package    : 1,
-1 -> id         : 2,
-2 -> dot        : 1,
-2 -> dot_comma  : 3,
-3 -> eol        : 0,
 
-# imports
 
-0 -> import     : 4,
-4 -> id         : 5,
-5 -> dot        : 4,
-5 -> dot_comma  : 6,
-6 -> eol        : 0,
+    0 -> import     : 4,
+        0 -> public     : 7,
+        0 -> private    : 7,
 
-# public class ClassName
 
-0 -> public     : 7,
-0 -> private    : 7,
-7 -> eol        : 8,
-8 -> eol        : 8,
+
+    3 -> import     : 4,
+        4 -> id         : 5,
+            5 -> dot        : 4,
+                5 -> dot_comma  : 6,
+    6 -> eol        : 3,
+
+
+
+    3 -> public     : 7,
+    3 -> private    : 7,
+    7-> eol        : 7,
     
-    8 -> class      : 9,
-    9 -> eol        : 9,
-    
-        9 -> id         : 10,
-        10 -> eol       : 10,
-            
-            10 -> open_key  : 11,
-            11 -> eol       : 11,
-  
-                # class body
+        7 -> class      : 8, 
+        8 -> eol        : 8,    
 
-                11 -> public    : 12,
-                11 -> private   : 12,
-        
-                12 -> eol       : 12,
+            8 -> identifier         : 9,
+            9 -> eol        : 9,        
+               
+                9 -> open_key  : 10,
 
-                    12 -> byte      : 13,
-                    12 -> short     : 13,
-                    12 -> long      : 13,
-                    12 -> int       : 13,
-                    12 -> float     : 13,
-                    12 -> double    : 13,
-                    12 -> char      : 13,
-                    12 -> boolean   : 13,
-        
-                    13 -> eol       : 13,
-        
-                        13 -> assigment_operator            : 14,
-                        13 -> compound_assignment_operators : 14,
-                        
-                            14 -> eol                    : 14,
-                            
-                            14 -> integer, float, string : 15,
-                            
-                            15 -> eol                    : 15,
-                            
-                            15 -> math_operator          : 
-            
-            
+
+
+                    10 -> byte      : 12,
+                    10 -> short     : 12,
+                    10 -> long      : 12,
+                    10 -> int       : 12,
+                    10 -> float     : 12,
+                    10 -> double    : 12,
+                    10 -> char      : 12,
+                    10 -> boolean   : 12,
+                    10 -> eol       : 12,
+                    
+                    10 -> public    : 11,
+                    10 -> private   : 11,
+                    11 -> eol       : 11,
+                    11 -> byte      : 12,
+                    11 -> short     : 12,
+                    11 -> long      : 12,
+                    11 -> int       : 12,
+                    11 -> float     : 12,
+                    11 -> double    : 12,
+                    11 -> char      : 12,
+                    11 -> boolean   : 12,
+                    11 -> void      : 12,
+                    12 -> eol       : 12,
+                    
+
+                        12 -> identifier : 13,
+                        13 -> eol        : 13,
+
+                            13 -> assigment_operator            : 14,
+                            13 -> compound_assignment_operators : 14,
+
+                                14 -> eol        : 14,
+                                14 -> identifier : 15,
+                                14 -> integer    : 15,
+                                14 -> float      : 15,
+                                14 -> string     : 15,
+                                15 -> eol        : 15,
+
+                                    15 -> math_operator       : 14,
+                                    15 -> logical_operator    : 14,
+                                    15 -> relational_operator : 14,
+
+
+                                        15 -> comma      : 12,
+
+                                        15 -> dot_comma  : 10,
+
+                                        10 -> identifier : 17,
+
+
+
+                            13 -> open_parenthesis : 19,
+
+
+                                19 -> close_parenthesis : 22,
+                                19 -> eol       : 20,
+                                19 -> byte      : 20,
+                                19 -> short     : 20,
+                                19 -> long      : 20,
+                                19 -> int       : 20,
+                                19 -> float     : 20,
+                                19 -> double    : 20,
+                                19 -> char      : 20,
+                                19 -> boolean   : 20,
+
+                                    20 -> eol        : 20,
+                                    20 -> identifier : 21,
+
+                                        21 -> eol               : 21,
+                                        21 -> comma             : 19,
+                                        21 -> close_parenthesis : 22,
+                                    
+                                
+                                22 -> eol : 22,
+                                22 -> open_key : 23,
+
+                                    23 -> eol : 23,
+                                    23 -> close_key : 10,
+
+                                    10 -> close_key : 17,
+                                    17 -> eol       : 17,
+                                    17 -> eof       : 17
+;
 
 
 

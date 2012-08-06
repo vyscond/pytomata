@@ -1,12 +1,14 @@
-import lexy
+import lexy2 as lexy
 import sys
 
 from time import time 
 
 t = time()
 
-l = lexy.Scanner()
-l.load_lexer_definition_from_file('files/lexers/java.lex')
+l = lexy.Scanner('files/lexers/java.lex')
+
+exit(0)
+
 tk = l.tokenizer(sys.argv[1])
 
 print tk

@@ -1,0 +1,70 @@
+states =
+
+    0,1,2,3,4,5,6,7,8,9,10,11,12
+;
+
+initial_state = 
+    0
+;
+
+final_state = 
+    0 , 3
+;
+
+
+alphabet        = end, function , identifier, integer, float, string , math_operator ,  assigment_operator, comma , open_parenthesis , close_parenthesis, open_key, close_key, open_bracket, close_bracket, eol,eof;
+
+transition_list =
+
+    0 -> eof : 0,
+
+    0 -> identifier : 1,
+
+    1 -> eol : 1,
+
+    1 -> assigment_operator : 2,
+
+    2 -> eol : 2,
+
+    2 -> integer  : 3,
+
+    2 -> float : 3,
+
+    2 -> string : 3,
+
+    3 -> eol : 0,
+
+    3 -> comma : 0,
+
+    3 -> math_operator : 2
+    
+    0 -> function : 4 ,
+
+    4 -> eol : 4,
+
+    4 -> identifier : 5,
+
+    5 -> eol : 5,
+
+    5 -> open_parenthesis  : 6,
+
+    6 -> eol : 6,
+
+    6 -> close_parenthesis : 7,
+
+    7 -> eol : 7,
+
+    7 -> print : 8,
+
+    8 -> eol : 8, 
+
+    9 -> open_parenthesis : 10,
+
+    10 -> close_parenthesis : 11,
+
+    11 -> eol : 12,
+
+    12 -> end : 0 
+ 
+;
+

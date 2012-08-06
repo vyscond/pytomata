@@ -1,4 +1,4 @@
-import lexy
+import lexy2
 import automata
 
 import sys
@@ -55,10 +55,16 @@ print '|    --- generating token ---    |'
 print '+--------------------------------+'
 
 print 'tokenizing -> '+fullpath
-l = lexy.Scanner()
-l.load_lexer_definition_from_file('files/lexers/'+extension+'.lex')
-tokenlist = l.tokenizer(fullpath)
+
+#l = lexy.Scanner()
+#l.load_lexer_definition_from_file('files/lexers/'+extension+'.lex')
+#tokenlist = l.tokenizer(fullpath)
 #tokenlist = tokenlist[0: (len(tokenlist) - 1) ]
+
+
+scan = lexy2.Scanner( lexy2.file_to_string( 'files/lexers/'+extension+'.lex' ) )
+scan.generate_token_list( lexy2.file_to_string( fullpath ) )
+tokenlist = scan.TOKENLIST_TEXT
 
 #--- misc
 print '+---------- Text ----------+'
@@ -92,15 +98,14 @@ tokenlist_path = path_without_filename + filename + '.token'
 
 s = open(tokenlist_path)
 
-token_source = automata.TokenSource( tokenlist_path )
+token_source = automata.TokenSource( open( tokenlist_path ) )
 
 m  = automata.Manager()
 answer = m.validate( dfa, token_source )
 
-print '<',answer,'>'
+#print 'Time %.2fs' %(tf-t)
 
+print '<',answer,'>'
 #----------------------------------------------------------
 
-tf = time()
-
-print 'Time %.2fs' %(tf-t)
+answer
