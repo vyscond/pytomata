@@ -1,9 +1,0 @@
-identifier:a
-allocation_operator:=
-integer:1
-integer:11
-eol
-identifier:b
-allocation_operator:=
-integer:22
-eol
